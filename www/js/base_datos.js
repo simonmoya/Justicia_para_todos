@@ -95,22 +95,6 @@ db.transaction( function(tx) {
 /* ---------------------------------------------------------------------- */
 
 
-        db.transaction( function(tx) {
-            tx.executeSql("Select count(*) as numero From ubicacion_programa", [],
-                function(tx, result){
-                    for(var i=0; i < result.rows.length; i++) var contador = [result.rows.item(i)['numero']];
-                });
-        });			
-
-
-        db.transaction( function(tx) {
-            tx.executeSql("Select count(*) as numero From palabra_clave", [],
-                function(tx, result){
-                    for(var i=0; i < result.rows.length; i++) var contador = [result.rows.item(i)['numero']];
-                });
-        });			
-
-
 db.transaction( function(tx) {
 tx.executeSql("Delete from tipo_parametro;")
 	
@@ -120,7 +104,6 @@ tx.executeSql("insert into tipo_parametro values(3,'Cuenta Youtube');")
 tx.executeSql("insert into tipo_parametro values(4,'Set de Datos Abiertos');")
 
 tx.executeSql("Delete from parametro;")
-tx.executeSql("Delete from palabra_clave;")
 
 tx.executeSql("insert into parametro values(1,'simonmoya@gmail.com','E-mail Ministerio de Justicia',1);")
 tx.executeSql("insert into parametro values(2,'winnie54817@gmail.com','E-mail Ministerio de Justicia',1);")
