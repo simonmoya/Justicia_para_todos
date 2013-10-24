@@ -2,10 +2,13 @@ function actualiza_set_datos()
 {
  var db;
  db = openDatabase("ejemplo3.db3", "1.0", "Ministerio de Justicia", 500000);
+ $.Zebra_Dialog('<strong>Inicia proceso de actualización de información por favor espere un momento a que el proceso finalice...', {
+    'type':     'information',
+    'title':    'Actualización de Información',
+    'buttons':  ['Aceptar'],
+    'onClose':  function(caption) {
  db.transaction(function(tx) {
- 
- 
-				 tx.executeSql("SELECT valor_parametro, convencion_parametro FROM parametro where codigo_tparametro = 4", [],
+ 				 tx.executeSql("SELECT valor_parametro, convencion_parametro FROM parametro where codigo_tparametro = 4", [],
                  function(tx, result)
 				 {				 
                   for(var i=0; i < result.rows.length; i++) 
@@ -13,9 +16,10 @@ function actualiza_set_datos()
 				   actualiza_informacion(result.rows.item(i)['convencion_parametro'],result.rows.item(i)['valor_parametro']);
 				  }
 				 }); 
-
-
             });
+    }
+});
+
 
 function actualiza_informacion(tabla, url) 
 { 
@@ -91,11 +95,17 @@ function actualiza_informacion(tabla, url)
 			 } 
 			 tx.executeSql(sql_query[i]);
 			 if (i == (sql_query.length - 1))
-             tx.executeSql("Select count(*) as numero From "+tabla, [],
-                function(tx, result){
-                    for(var i=0; i < result.rows.length; i++) var contador = [result.rows.item(i)['numero']];
-					alert("Informacion "+tabla+": "+contador);
-                });			 
+			 {
+              tx.executeSql("Select count(*) as numero From "+tabla, [],
+                 function(tx, result){
+                     for(var i=0; i < result.rows.length; i++) var contador = [result.rows.item(i)['numero']];
+					 alert("Informacion "+tabla+": "+contador);
+					 if (tabla == 'ubicacion_programa')
+			  $.Zebra_Dialog('<strong>Actualización de Información Finalizada exitósamente</strong>', {
+							'type':     'information',
+							'title':    'Actualización de Información'});
+                 });		
+			 }
 			}
 
 
