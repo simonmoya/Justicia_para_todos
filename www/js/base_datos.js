@@ -117,7 +117,10 @@ tx.executeSql("insert into parametro values(7,'http://servicedatosabiertoscolomb
 tx.executeSql("Select count(*) as numero From palabra_clave", [],
                 function(tx, result){
                     for(var i=0; i < result.rows.length; i++) 
+					{
+					 alert("No. palabra_clave: "+result.rows.item(i)['numero'];
 					 if ([result.rows.item(i)['numero']] == 0) actualiza_set_datos();					
+					} 
                 });	
 
             });
