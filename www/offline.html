@@ -1,0 +1,73 @@
+﻿<html class="no-js ui-mobile-rendering" lang="es">
+ <head>
+      <title>Búsqueda de Casas de Justicia y Centros de Convivencia Ciudadana</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+      <meta http-equiv="Content-Type" name="viewport" content="width=device-width; initial-scale=1; charset=UTF-8">
+		
+		<script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+		<script type="text/javascript" src="js/offline.js"></script>
+		
+<script>
+ function construye_tabla()
+ {
+  var db;
+  var html="";
+  var container = document.getElementById("tabla")
+  html += "<table border=1 id='tblTabla' align=center><thead><tr><th>Programa</th><th>Ubicación</th>";
+  html += "<th>Teléfono</th><th>E-mail</th></tr></thead><tbody>";
+  db = openDatabase("ejemplo3.db3", "1.0", "Ministerio de Justicia", 500000);
+
+        db.transaction( function(tx) {
+            tx.executeSql("SELECT tipo_programa, departamento, codigo_dane_municipio, nombre_lugar, direccion_lugar, barrio_lugar, telefono_lugar, email FROM ubicacion_programa order by tipo_programa, departamento, codigo_dane_municipio", [],
+                function(tx, result){
+                    for(var i=0; i < result.rows.length; i++) 
+					{
+					 var propiedad="";
+					 var ubicacion="";
+					 if ((result.rows.item(i)['direccion_lugar'].length > 20) && (result.rows.item(i)['direccion_lugar'].length < 25)) propiedad = 'NOWRAP';
+					 if (result.rows.item(i)['departamento'] == result.rows.item(i)['codigo_dane_municipio']) ubicacion = result.rows.item(i)['codigo_dane_municipio'];
+					 else ubicacion = result.rows.item(i)['departamento']+" - "+result.rows.item(i)['codigo_dane_municipio']
+					 html += "<tr><td>"+result.rows.item(i)['tipo_programa']+"</td><td "+propiedad+"><strong>";
+					 html += ubicacion+"</strong><br>"+result.rows.item(i)['direccion_lugar']+' <br> '+result.rows.item(i)['barrio_lugar'];
+					 html += "</td><td>"+result.rows.item(i)['telefono_lugar']+"</td><td>"+result.rows.item(i)['email']+"</td></tr>";
+                    }
+		html += "</tbody><tfoot width='100%'><tr><td colspan='4'>Resultados de la Búsqueda</td></tr></tfoot></table>";
+  		container.innerHTML=html;
+ 
+                });
+        });  
+
+ }
+ 
+</script>		
+		<link rel="stylesheet" type="text/css" href="css/style_offline.css">
+      <link rel="stylesheet" href="css/jquery.mobile-1.3.1.min.css" />
+      <script src="js/libs/require.js" data-main="js/mobile"></script>
+	</head>
+	<body>
+<div id="categories" data-role="page" data-title="Búsqueda de Información" style="background-image: url('images/fondo_2.jpg'); background-repeat:no-repeat; background-size:100% 100%; background-position: absolute">
+	
+		<div id="divContenedor">
+			<div id="divInfo">
+				<h1>
+					Información de Casas de Justicia y Centros de Convivencia Ciudadana
+				</h1>
+			</div>
+				<br>
+			<div id="divTabla" align=center>			
+				<table border=0 align=center><tr><td><input type="search" id="busqueda" data-inline="true"/></td><td>
+				<input type="submit" value="Buscar" data-inline="true" OnClick="javascript:busca_tabla($(tblTabla),document.getElementById('busqueda').value);"/>
+				</td></tr></table>
+				<br>
+				<div id="tabla">
+				</div>
+				<script> construye_tabla();</script>
+			</div>
+		</div>
+	 <p><a href="orientate.html" data-direction="reverse" data-role="button" data-theme="b">Regresar</a></p>
+	</div>
+
+
+	</body>
+</html>

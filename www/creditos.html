@@ -1,0 +1,66 @@
+﻿<html class="no-js ui-mobile-rendering" lang="es">
+<head>
+      <title>Créditos</title>
+
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+	  <script src="js/jquery-1.9.1.min.js"></script>
+
+      <link rel="stylesheet" href="css/jquery.mobile-1.3.1.min.css" />
+      <script src="js/libs/require.js" data-main="js/mobile"></script>
+	  
+<script>
+
+function updateBackground() {
+screenWidth = $(window).width();
+screenHeight = $(window).height();
+var bg = jQuery("#bg");
+ 
+// Proporcion horizontal/vertical. En este caso la imagen es cuadrada
+ratio = 1;
+ 
+if (screenWidth/screenHeight > ratio) {
+$(bg).height("95%");
+$(bg).width("60%");
+} else {
+$(bg).width("100%");
+$(bg).height("90%");
+}
+ 
+// Si a la imagen le sobra anchura, la centramos a mano
+if ($(bg).width() > 0) {
+$(bg).css('left', (screenWidth - $(bg).width()) / 2);
+}
+}
+$(document).ready(function() {
+// Actualizamos el fondo al cargar la pagina
+updateBackground();
+$(window).bind("resize", function() {
+// Y tambien cada vez que se redimensione el navegador
+updateBackground();
+});
+});
+
+  var ventana_alto = $(window).height();
+  var ventana_alto2 = $(window).height();
+  if (ventana_alto2 <= 302) 
+  {
+   var ventana_alto = 303;
+   ventana_alto2 = 353;
+  } 
+  var ventana_medio = ventana_alto2/2;
+  
+ if ($(window).width() < 300)
+   factor = 20;
+ else factor = 0;
+	
+</script>		
+    </head>
+	
+<body>
+<center><div id="container" style="width: 100%; height: 90%; margin: auto auto">
+<img src="images/creditos.png" alt="Fondo" id="bg">
+<p><a href="index.html" data-direction="reverse" data-role="button" data-theme="b">Regresar</a></p>
+</div></center>
+		
+    </body>
+</html>

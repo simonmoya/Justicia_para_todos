@@ -1,0 +1,338 @@
+﻿<html class="no-js ui-mobile-rendering" lang="es">
+<head>
+      <title>TODO BIEN - ORIENTATE</title>
+
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+	  <script src="js/jquery-1.9.1.min.js"></script>
+
+      <link rel="stylesheet" href="css/jquery.mobile-1.3.1.min.css" />
+      <script src="js/libs/require.js" data-main="js/mobile"></script>
+	  
+<style>
+  #map_canvas { float:center; width: 400px; height: 400px; }
+</style>
+
+<script type="text/javascript">
+ var db;
+ var Latdes;
+ var Lngdes;
+ var Direccion_destino;
+ var Nombre_destino;
+ var Telefono_destino;
+ var Correo_destino;
+ var Latori_1;
+ var Lngori_1;
+ var Latori;
+ var Lngori;
+ var MyOrigin ;
+ var MyDestination;
+ var directionsService;
+ var directionsDisplay;
+ var icon_destino ="Casa de Justicia";
+ var Latdes_calc;
+ var Lngdes_calc;
+ var Direccion_destino_calc;
+ var Nombre_destino_calc;
+ var Telefono_destino_calc;
+ var Correo_destino_calc;
+ var Distancia_calc=0;
+ //mientras se carga la base de datos
+ var Latdes2;
+ var Lngdes2;
+ var nom_programa;
+ var distancia;
+ distancia=1000000;
+// InicializaDatos();
+
+        function InicializaDatos() {
+     db = openDatabase("ejemplo3.db3", "1.0", "Ministerio de Justicia", 500000);
+    sentencia = "Select nombre_lugar, direccion_lugar, telefono_lugar, email, latitud, longitud From ubicacion_programa  where tipo_programa='"+nom_programa+"'";
+// alert("Sentencia: "+sentencia);
+
+                db.transaction( function(tx) {
+                        tx.executeSql(sentencia, [],
+                                function(tx, result){
+// alert(result.rows.length);
+                                        for(var i=0; i < result.rows.length; i++)  
+					{
+					
+					 Latdes_calc = result.rows.item(i)['latitud'];
+					 Lngdes_calc = result.rows.item(i)['longitud'];
+					 Direccion_destino_calc = result.rows.item(i)['direccion_lugar'];
+					 Nombre_destino_calc = result.rows.item(i)['nombre_lugar'];
+					 Telefono_destino_calc = result.rows.item(i)['telefono_lugar'];
+					 Correo_destino_calc = result.rows.item(i)['email'];
+					 calcularDistancia();
+//					 alert("8"+i);
+					 if (i == (result.rows.length-1)) mostrarMapa();
+					}
+                                });
+                });
+
+
+        }
+</script>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=true"></script>
+<script type="text/javascript">
+			
+			
+	// Wait for device API libraries to load
+    //
+    document.addEventListener("deviceready", onDeviceReady, false);
+    // device APIs are available
+    //
+function onDeviceReady() {
+	//alert("4");
+		navigator.geolocation.getCurrentPosition(onSuccess, onError, {maximumAge:3000,timeout:25000,enableHighAccuracy:true});
+    }
+
+    // onSuccess Geolocation
+    //
+
+function onSuccess(position) {
+//alert("5");
+        var element = document.getElementById('geolocation');
+        /*element.innerHTML = 'Latitude: '           + position.coords.latitude              + '<br />' +
+                            'Longitude: '          + position.coords.longitude             + '<br />' +
+                            'Altitude: '           + position.coords.altitude              + '<br />' +
+                            'Accuracy: '           + position.coords.accuracy              + '<br />' +
+                            'Altitude Accuracy: '  + position.coords.altitudeAccuracy      + '<br />' +
+                            'Heading: '            + position.coords.heading               + '<br />' +
+                            'Speed: '              + position.coords.speed                 + '<br />' +
+                            'Timestamp: '          + position.timestamp                    + '<br />';*/
+		Latori_1=position.coords.latitude;
+		Lngori_1=position.coords.longitude;
+		Latori=Latori_1;
+		Lngori=Lngori_1;
+		//alert("6");
+		InicializaDatos();
+    }
+
+    // onError Callback receives a PositionError object
+    //
+function onError(error) {
+	if(error.code==1)
+	{
+		alert("No es posible ingresar a la funcionalidad por denegar permisos de ubicación");
+	}
+	else {
+        alert('code: '    + error.code    + '\n' +
+              'message: ' + error.message + '\n');
+    }
+	window.location="orientate.html";
+}
+
+function pintarRuta(){
+	var MyOrigin = new google.maps.LatLng(Latori, Lngori);
+	var MyDestination = new google.maps.LatLng(Latdes, Lngdes);
+	var directionsService = new google.maps.DirectionsService();
+	var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+	mostrarMapa();
+}
+
+var rendererOptions = {draggable: true, suppressMarkers : true};
+//Simon Bolivar
+Latori = 4.659068;
+Lngori = -74.09354;
+//tunal
+Latdes2 = 4.5679792;
+Lngdes2 = -74.1353177;
+//barrios unidos
+Latdes2 = 4.658042;
+Lngdes2 = -74.076876;
+//destino parque nacional
+Latdes = 4.624164;
+Lngdes = -74.060066;
+
+			var MyOrigin = new google.maps.LatLng(Latori, Lngori);
+			var MyDestination = new google.maps.LatLng(Latdes, Lngdes);
+			var directionsService = new google.maps.DirectionsService();
+			var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);			
+
+function initialize() {
+//alert("1");
+var url = location.href;
+	var url = location.href;
+	var index = url.indexOf("?");
+	var Entidad = url.substring(index+9, index+13);
+	//alert("2");
+	if (Entidad=="Casa"){
+		nom_programa="Casa de Justicia";
+		icon_destino="Casa de Justicia";
+	}
+	else
+	{
+		nom_programa="Centro de Convivencia";
+		icon_destino="Centro de Convivencia Ciudadana";
+	}
+	//alert("3");
+	onDeviceReady();		
+	//mostrarMapa();
+}
+						
+function Dist(lat1, lon1, lat2, lon2)
+  {
+  rad = function(x) {return x*Math.PI/180;}
+
+  var R     = 6378.137;                          //Radio de la tierra en km
+  var dLat  = rad( lat2 - lat1 );
+  var dLong = rad( lon2 - lon1 );
+  var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(rad(lat1)) * Math.cos(rad(lat2)) * Math.sin
+
+(dLong/2) * Math.sin(dLong/2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  var d = R * c;
+  return d.toFixed(3);                      //Retorna tres decimales
+}
+
+
+
+function calcularDistancia() {
+		if (Latdes_calc<-91 || Latdes_calc>91)
+		{
+//			alert("latitud errada"+Nombre_destino);
+			//return false;
+		}
+		if (Lngdes_calc<-181 || Lngdes_calc>181){
+//			alert("longitud errada"+Nombre_destino);
+			//return false;
+		}
+		
+		Distancia_calc = Dist(Latori, Lngori, Latdes_calc, Lngdes_calc);   //Retorna numero en Km
+		if (parseFloat(Distancia_calc) < parseFloat(distancia) )
+		{
+			distancia = Distancia_calc;
+			Latdes=Latdes_calc;
+			Lngdes=Lngdes_calc;
+			Direccion_destino = Direccion_destino_calc;
+			Nombre_destino = Nombre_destino_calc;
+			Telefono_destino = Telefono_destino_calc;
+			Correo_destino = Correo_destino_calc;
+		}
+}
+
+			
+function mostrarMapa(){	
+			MyOrigin = new google.maps.LatLng(Latori, Lngori);
+			MyDestination = new google.maps.LatLng(Latdes, Lngdes);
+			directionsService = new google.maps.DirectionsService();
+			directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+			
+			var mtv = new google.maps.LatLng(Latori, Lngori);
+				showDirections();
+				map = new google.maps.Map(document.getElementById('map_canvas'), {
+					center : mtv,
+					zoom : 7,
+					mapTypeId : 'roadmap',
+					icon: 'images/derecha.png'
+				});
+				//COLOCA EL ICONO DEL ORIGEN
+				var origen = new google.maps.Marker({
+				position: new google.maps.LatLng(Latori, Lngori),
+				icon: 'images/origen.png',
+				map: map
+				});
+				//UBICA EL PUNTO ORIGEN
+				var infowindow = new google.maps.InfoWindow({
+				map: map,
+				position: new google.maps.LatLng(Latori, Lngori),
+				});
+				//EVENTO CUANDO SE DA CLICK SOBRE EL PUNTO ORIGEN
+				google.maps.event.addListener(origen, 'click', function() {
+					var dialogo = "Usted está aqui";
+					var infowindow = new google.maps.InfoWindow({
+					map: map,
+					position: new google.maps.LatLng(Latori, Lngori),
+					content: dialogo										
+					});
+				});				
+				
+				//COLOCA EL ICONO DEL DESTINO
+				if (icon_destino =="Casa de Justicia") {
+					var destino = new google.maps.Marker({
+					position: new google.maps.LatLng(Latdes, Lngdes),
+					icon: 'images/cj.png',
+					map: map
+					});
+				}
+				else
+				{
+					var destino = new google.maps.Marker({
+					position: new google.maps.LatLng(Latdes, Lngdes),
+					icon: 'images/ccc.png',
+					map: map
+					});
+				}
+				//UBICA EL PUNTO DESTINO
+				var infowindow = new google.maps.InfoWindow({
+				map: map,
+				position: new google.maps.LatLng(Latdes, Lngdes),
+				});
+				//EVENTO CUANDO SE DA CLICK SOBRE EL PUNTO DESTINO
+				google.maps.event.addListener(destino, 'click', function() {
+					var dialogo = mostrarInfo(Direccion_destino, Nombre_destino, Telefono_destino, Correo_destino);
+					var infowindow = new google.maps.InfoWindow({
+					map: map,
+					position: new google.maps.LatLng(Latdes, Lngdes),
+					content: dialogo										
+					});
+				});
+				
+						
+				
+				directionsDisplay.setMap(map);
+				//la siguiente lÃ­nea muestra los pasos a dar para llegar al destino
+				//directionsDisplay.setPanel(document.getElementById("directions-panel"));
+
+			}
+						
+function showDirections() {
+  
+  var request = {
+	origin:MyOrigin,
+	destination:MyDestination,
+	travelMode: google.maps.TravelMode.DRIVING
+  };
+
+  directionsService.route(request, function(result, status) {
+	if (status == google.maps.DirectionsStatus.OK) {
+	  directionsDisplay.setDirections(result);
+	}
+  });
+}
+
+function mostrarInfo (r_direc, r_nombre,r_tel,r_correo) {
+	var prueba = 	'<table style="font-size:11px"><tr><td style="font-weight:bold; font-size:10px">Nombre: </td><td>'+r_nombre+'</td></tr>'+
+					'<tr><td style="font-weight:bold">Direccion: </td><td>'+r_direc+'</td></tr>'+
+					'<tr><td style="font-weight:bold">Telefono: </td><td>'+r_tel+'</td></tr>'+
+					'<tr><td style="font-weight:bold">Correo: </td><td>'+r_correo+'</td></tr></table>';
+	return prueba;
+	
+}
+
+
+
+		
+</script>
+</head>
+	
+<body onload="initialize()">
+<div id="categories" data-role="page" data-title="Mapa" style="background-image: url('images/fondo_2.jpg'); background-repeat:no-repeat; background-size:100% 100%; background-position: absolute">
+<div height=200px style="background-image: url('images/cabecera.png'); background-repeat:no-repeat; background-size:100% 100%; background-position: absolute">
+<br><br><br><br>
+</div>
+<center><div id="container" style="width: auto; height: auto; margin: auto auto"></div></center>
+
+<div data-role="content" >
+<div id='top_content'>
+				<!--<input type="button" value="Get Me Directions" onClick="showDirections();">   -->
+</div>
+<center>
+<div id="map_canvas"></div></center>
+	<div id="directions-panel">
+	<!--Directions displayed here:	-->
+	</div>
+	</div><!-- /content -->
+	<div <p><a href="orientate.html" data-role="button" data-theme="b">Regresar</a></p>			</div>
+	</body>
+</html>

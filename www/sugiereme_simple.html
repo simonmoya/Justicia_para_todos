@@ -1,0 +1,110 @@
+﻿<html class="no-js ui-mobile-rendering" lang="es">
+<head>
+      <title>TODO BIEN - SUGIEREME</title>
+
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+	  <script src="js/jquery-1.9.1.min.js"></script>
+
+      <link rel="stylesheet" href="css/jquery.mobile-1.3.1.min.css" />
+      <script src="js/libs/require.js" data-main="js/mobile"></script>
+	  
+	  <script type="text/javascript" charset="utf-8" src="phonegap.js"></script>
+	  <script type="text/javascript" src="js/emailcomposer.js"></script>
+	  
+        <style>
+            *{
+                margin:0;
+                padding:0;
+            }
+        </style>
+</head>
+
+<body onload="leer_destinatario();">
+<div id="categories" data-role="page" data-title="Sugiereme" style="background-image: url('images/fondo_2.jpg'); background-repeat:no-repeat; background-size:100% 100%; background-position: absolute">
+<div height=200px style="background-image: url('images/cabecera.png'); background-repeat:no-repeat; background-size:100% 100%; background-position: absolute">
+<br><br><br><br><br><br><br><br>
+</div>
+<div id="principal" data-role="collapsible-set" data-theme="c" data-content-theme="d">
+
+<center><div id="container" style="width: auto; height: auto; margin: auto auto"></div></center>
+<div>
+		<h1></h1>
+	</div>
+<div data-role="header">
+		<h1><b>SUGIEREME</b></h1>
+	</div><!-- /header -->
+
+	<br><br>
+	
+ <div>
+ <h3>Nombre*</h3><input type="text" id="t_nombre"  value="" size="60" maxlength="128"/>
+</div>
+
+ <div>
+ <h3>Teléfono*</h3><input type="text" id="t_telefono"  value="" size="60" maxlength="25"/>
+</div>
+
+ <div>
+ <h3>Sugerencia*</h3><textarea id="t_sugerencia"  value="" size="60" maxlength="200"></textarea>
+</div>
+
+ <br>
+ <script>
+var correo_prueba="edmi48@gmail.com";
+var texto="prueba";
+ document.write('<p><a data-role="button" data-theme="b" onClick="sendEmail(); return false;">Enviar</a></p>')
+ </script>
+ <p><a href="index.html" data-direction="reverse" data-role="button" data-theme="b">Regresar</a></p>
+ <br><br>
+ 
+ <script>
+ var correo_para ="";
+ 
+ function sendEmail(){
+		if (document.getElementById("t_nombre").value!=""){
+			if (document.getElementById("t_sugerencia").value!=""){
+				if (isNaN(document.getElementById("t_telefono").value)) {
+					alert("Error:\nEste campo debe tener sólo números.");
+					return false;
+					}
+				else {
+					if (document.getElementById("t_telefono").value!=""){
+					 //variables para enviar el correo
+					 var texto = document.getElementById("t_sugerencia").value;
+					 var asunto ="Sugerencia";
+					 texto=texto+"\n\n \r\n Nombre: "+document.getElementById("t_nombre").value+"\n   Teléfono: "+document.getElementById("t_telefono").value;
+					//window.open('mailto:' + correo_para + '?subject=Sugerencia&body='+texto);
+					window.location.href='mailto:' + correo_para + '?subject=Sugerencia&body='+texto;
+					}
+					else
+						alert ("Debe diligenciar un teléfono");
+				}
+			}
+			else
+				alert ("Debe diligenciar la sugerencia");
+		}
+		else 
+			alert ("Debe diligenciar el Nombre");
+    }
+
+function leer_destinatario()
+{
+  var db;
+  db = openDatabase("ejemplo3.db3", "1.0", "Ministerio de Justicia", 500000);
+  db.transaction(function(tx) 
+				 {
+            	  tx.executeSql("SELECT convencion_parametro, valor_parametro FROM parametro where codigo_tparametro = 1", [],
+                  function(tx, result)
+				  {
+                   for(var i=0; i < result.rows.length; i++) 
+				   {
+				    if (i > 0) correo_para = correo_para + ",";
+				    correo_para = correo_para + result.rows.item(i)['valor_parametro'];
+                   }
+                  });
+		         }); 
+
+}	
+</script>		
+</body>
+</html>

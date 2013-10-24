@@ -1,0 +1,92 @@
+﻿<html class="no-js ui-mobile-rendering" lang="es">
+<head>
+      <title>Orientate</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+  <script type="text/javascript" src="js/jquery.autocomplete.min.js"></script>
+ 
+  <script type="text/javascript">
+    var db;
+    var data_busqueda = [];
+	inicializa_db();
+	
+    function inicializa_db() 
+	{
+     db = openDatabase("ejemplo3.db3", "1.0", "Ministerio de Justicia", 500000);
+
+  	 db.transaction(function(tx) 
+				    {
+				
+            	  	 tx.executeSql("SELECT b.nombre_palabra_clave, a.programa, a.descripcion_tipo_informacion, a.entidad_encargada FROM informacion_programa a, palabra_clave b Where a.id_programa = b.id_programa Order by 1", [],
+                  	 function(tx, result)
+					 {
+					  contador = result.rows.length - 1; 
+                   	  for(var i=0; i < result.rows.length; i++) 
+					  {
+					   data_busqueda.push({value: result.rows.item(i)['nombre_palabra_clave'], data: result.rows.item(i)['programa'], data2: result.rows.item(i)['entidad_encargada'], data3: result.rows.item(i)['descripcion_tipo_informacion']});
+					   if (i == contador)
+					   {
+  // setup autocomplete function pulling from data_busqueda[] array
+						$('#autocomplete').autocomplete(
+						{
+			             lookup: data_busqueda,
+						 onSelect: function (suggestion) 
+						 {
+						  if (suggestion.data == 'Casa de Justicia') icono = 'images/cj.png'
+						  else icono = 'images/ccc.png'
+					      var thehtml = '<a href="mapa.html?Entidad='+suggestion.data+' target="_self"><img src="'+icono+'" height="42" width="42">&nbsp;&nbsp;' + suggestion.data + ' (Ver mapa)</a> <br> <strong>Entidad Encargada</strong> ' + suggestion.data2 + ' <br> <strong>Descripción Conflicto:</strong> ' + suggestion.data3;
+					      $('#resultado').html(thehtml);
+					     }
+						});	
+						
+
+						
+					   }
+                   	  }
+                  	 });
+                 	});
+ 
+    }  
+  </script>
+
+      <link rel="stylesheet" href="css/jquery.mobile-1.3.1.min.css" />
+      <script src="js/libs/require.js" data-main="js/mobile"></script>
+	  <link rel="stylesheet" type="text/css" media="all" href="css/autocomplete.css">
+	  		
+        <style>
+            *{
+                margin:0;
+                padding:0;
+            }
+        </style>
+</head>
+
+<body  onload="inicializa_db();">
+<div id="categories" data-role="page" data-title="Oriéntate" style="background-image: url('images/fondo_2.jpg'); background-repeat:no-repeat; background-size:100% 100%; background-position: absolute">
+<div height=200px style="background-image: url('images/cabecera1.png'); background-repeat:no-repeat; background-size:100% 100%; background-position: absolute">
+<br><br><br><br>
+</div>
+<div id="principal" data-theme="c" data-content-theme="d">
+
+<center><div id="container" style="width: auto; height: auto; margin: auto auto"></div></center>
+  <div id="w">
+    <div id="content">      
+      <div id="searchfield">
+	  	<label for="txtBuscar"><b><h2>Buscar Conflicto:</h2></b></label>
+        <script>document.write('<input type="text" name="txtBuscar" class="biginput2" id="autocomplete" height="100%" width="100%">');</script>
+      </div><!-- @end #searchfield -->
+      
+      <div id="outputbox">
+        <p id="resultado"></p>
+      </div>
+    </div><!-- @end #content -->
+  </div><!-- @end #w -->
+  
+</div>
+ <br>
+ <p><a href="offline.html" data-direction="reverse" data-role="button" data-theme="b">Ver Todos</a></p>
+ <p><a href="index.html" data-direction="reverse" data-role="button" data-theme="b">Regresar</a></p>
+ <br><br>		
+</body>
+</html>

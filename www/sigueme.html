@@ -1,0 +1,73 @@
+﻿<html class="no-js ui-mobile-rendering" lang="es">
+ <head>
+      <title>Sígueme</title>
+      <meta name="description" content="">
+
+      <meta http-equiv="Content-Type" name="viewport" content="width=device-width; initial-scale=1; charset=UTF-8">
+	  <script src="js/jquery-1.9.1.min.js"></script>
+
+
+	  <script src="phonegap.js"></script>
+	  <script src="childbrowser.js"></script>
+      <link rel="stylesheet" href="css/jquery.mobile-1.3.1.min.css" />
+      <script src="js/libs/require.js" data-main="js/mobile"></script>
+	  
+  <script type="text/javascript" charset="utf-8">
+
+
+      function checkConnection() 
+	  {
+	   if(navigator.connection.type == Connection.NONE)
+	   { 
+		var conexion = 0;
+	   }else{
+			var conexion = 1;
+		  }
+	   return conexion;
+      }
+    </script>
+
+
+	
+</head>
+<body onload="checkConnection();">
+<div id="categories" data-role="page" data-title="Sígueme" style="background-image: url('images/fondo_2.jpg'); background-repeat:no-repeat; background-size:100% 100%; background-position: absolute">
+<div height=200px style="background-image: url('images/cabecera3.png'); background-repeat:no-repeat; background-size:100% 100%; background-position: absolute">
+<br><br><br><br>
+</div>
+<div id="principal">
+  
+  <script>
+  var id_owner = '352973335937814528';
+  var capa = document.getElementById('principal');
+  var tweet = document.createElement("div");  
+  var final = '';
+  
+  final = final + ' <br> ';
+  var db;
+  db = openDatabase("ejemplo3.db3", "1.0", "Ministerio de Justicia", 500000);
+  db.transaction(function(tx) 
+				 {
+            	  tx.executeSql("SELECT convencion_parametro, valor_parametro FROM parametro where codigo_tparametro = 2", [],
+                  function(tx, result)
+				  {
+                   for(var i=0; i < result.rows.length; i++) 
+				   {
+			        final = final + ' <a class="twitter-timeline" href="https://twitter.com/twitterapi" data-widget-id="'+id_owner+'" data-screen-name="'+result.rows.item(i)['valor_parametro']+'" width=100% height=120 lang="ES">'+result.rows.item(i)['convencion_parametro']+'</a> ';  
+                   }
+				   final = final + ' <p><a href="index.html" data-direction="reverse" data-role="button" data-theme="b">Regresar</a></p> ';
+				   principal.innerHTML = final;
+				   capa.appendChild(tweet);   
+				   !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="http://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+
+                  });
+		         });  
+  
+  </script>
+  
+  
+  
+</div>
+
+</body>
+</html>

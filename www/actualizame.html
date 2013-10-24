@@ -1,0 +1,212 @@
+﻿<html class="no-js ui-mobile-rendering" lang="es">
+<head>
+    <title>Actualizame</title>
+
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+
+      <script src="js/libs/require.js" data-main="js/mobile"></script>
+	  
+        <link rel="stylesheet" href="css/zebra_dialog.css" type="text/css">
+       <link rel="stylesheet" href="css/jquery.mobile-1.3.1.min.css" />
+
+        <script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+        <script type="text/javascript" src="js/zebra_dialog.js"></script>
+
+		<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+
+    <script type="text/javascript">
+		
+/*Definición Variables Globales*/
+var url = "";	
+var url2 = "";	
+var html="";
+var db2;
+var actualiza; 
+/*Fin definición Variables Globales*/
+
+function inicializa_feed()
+{
+//alert("Entra a inicializa_feed");
+db2 = openDatabase("ejemplo3.db3", "1.0", "Ministerio de Justicia", 500000);
+
+db2.transaction(function(tx2) {
+            	 tx2.executeSql("SELECT valor_parametro FROM parametro where codigo_tparametro = 4", [],
+                 function(tx2, result2)
+				 {
+                  for(var s=0; s < result2.rows.length; s++) 
+				  {
+				   if (s == 0) actualiza = result2.rows.item(s)['valor_parametro'];	
+				   else actualiza += ";"+result2.rows.item(s)['valor_parametro'];	
+				   if (s == (result2.rows.length-1)) 
+				   obtener_url();
+				  }
+				 }); 
+
+
+            });	
+}
+
+function obtener_url()
+{
+ texto = actualiza.split(String.fromCharCode(59));
+ for(var s=0; s < texto.length; s++) 
+ switch(s)
+ {
+  case 0: url = texto[s];
+  break;
+  case 1: url2 = texto[s];
+  break;
+ }		
+// alert("url: "+url); 
+// alert("url2: "+url2); 
+}
+
+	
+    function elimina_espacio(info)
+	{
+			 for (var k = 0; k < info.length; k++) 
+			 {
+              var caracter = info.charAt(k);
+             if( caracter != String.fromCharCode(32)) 
+			 {
+              campo = info.substring(k,info.length);
+			  k = info.length;
+             } 
+            }
+	 return campo;
+	}
+
+function carga_informacion(db,result,objeto,fin)
+{
+          var container = objeto;
+		  id_registro = 1;
+		  id_palabra = 1;
+		  for (var i = 0; i < result.feed.entries.length; i++) 
+		  {
+			if (id_registro == 1) html = "";
+		    j = i + 1;
+            var entry = result.feed.entries[i];
+
+			valor = entry.content.split(String.fromCharCode(10));
+			if (valor.length == 17) ini = 4;
+			else ini = 3;
+			
+			
+			for (var j = ini; j< valor.length; j++) 
+			{
+			 valor[j] = elimina_espacio(valor[j]);			
+		 	 if (j == 7) palabra_clave =  valor[j].split(String.fromCharCode(59));
+		    }
+			
+			if ((valor.length == 11) && (id_registro == 1)) ejecuta_sentencia(db,"Delete from informacion_programa",0,0,0);			
+			if ((valor.length == 17) && (id_registro == 1)) ejecuta_sentencia(db,"Delete from ubicacion_programa",0,0,0);			
+			
+			if (valor.length == 17)
+			 var sql = "Insert into ubicacion_programa values ("+id_registro+",'"+valor[4]+"','"+valor[5]+"','"+valor[6]+"','"+valor[7]+"','"+valor[8]+"','"+valor[9]+"','"+valor[10]+"','"+valor[11]+"','"+valor[12]+"','"+valor[13]+"','"+valor[14]+"','"+valor[15]+"');";
+			else
+			 var sql = "Insert into informacion_programa values ("+id_registro+",'"+valor[3]+"','"+valor[4]+"','"+valor[5]+"','"+valor[6]+"','"+valor[8]+"','"+valor[9]+"');";
+			
+			ejecuta_sentencia(db,sql,id_registro,result.feed.entries.length,fin);
+			
+			html+='<li>';
+			html+='<pre>'+sql+'</pre>';
+			if (valor.length == 11)
+			for (var j = 0; j< palabra_clave.length; j++) 
+			{
+			 palabra_clave[j] = elimina_espacio(palabra_clave[j]);
+			 var sql2 = "Insert into palabra_clave values ("+id_palabra+",'"+palabra_clave[j]+"',"+id_registro+");";
+			 
+			 if (id_palabra == 1) ejecuta_sentencia(db,"Delete from palabra_clave",0,0,0);			
+
+			 ejecuta_sentencia(db,sql2,0,0,0);
+			 
+			 id_palabra++;
+			 html+='<pre>'+sql2+'</pre>';
+			}
+			html+='</p>';
+			html+='</li>';
+//			alert(valor[4]);
+			id_registro++;
+
+          }
+		  html+="<ul>";
+//		  container.innerHTML=html;
+
+}	
+	
+    function actualiza_informacion_ubicacion() 
+	{
+     var db;
+	 db = openDatabase("ejemplo3.db3", "1.0", "Ministerio de Justicia", 500000);
+     var feed = new google.feeds.Feed(url2);
+     feed.setNumEntries(1000000);
+     feed.load(function(result) {
+        if (!result.error) {
+//			alert("Entra a actualiza_informacion_ubicacion");
+			carga_informacion(db,result,document.getElementById("feed2"),0);						
+        }
+      });
+    }
+
+    function actualiza_informacion_programa() 
+	{
+     var db;
+	 db = openDatabase("ejemplo3.db3", "1.0", "Ministerio de Justicia", 500000);
+     var feed = new google.feeds.Feed(url);
+     feed.setNumEntries(1000000);
+     feed.load(function(result) {
+        if (!result.error) {
+//			alert("Entra a actualiza_informacion_programa");
+			carga_informacion(db,result,document.getElementById("feed"),1);						
+        }
+      });
+    }
+
+	
+function ejecuta_sentencia(db,sql,registro,total_registro,fin)
+{
+        db.transaction( function(tx) {
+            tx.executeSql(sql, [],
+                function(tx, result){
+				  if ((fin == 1) && (registro == total_registro))
+				  {
+				   setTimeout(function(){
+				   $.Zebra_Dialog('<strong>Actualización Exitosa', {            
+				    'onClose':  function(caption) 
+				    {
+				     window.history.back();
+				    }
+				    });			 
+				   },5000);
+				  }
+                });
+        });
+
+}	
+    </script>
+		
+    </head>
+
+    <body>
+
+  <body>
+  <div id="categories" data-role="page" data-title="Actualizame" style="background-image: url('images/fondo_2.jpg'); background-repeat:no-repeat; background-size:100% 100%; background-position: absolute">
+<div height=200px style="background-image: url('images/cabecera6.png'); background-repeat:no-repeat; background-size:100% 100%; background-position: absolute">
+<br><br><br><br>
+</div>
+    <div> El proceso de actualización puede tardar entre 20 segundos y 30 segundos dependiendo de las características de su dispositivo, si transcurrido el tiempo máximo no aparece el mensaje Actualización Exitosa, por favor pulse el botón Actualízame </div>
+    <input type="button" data-theme="b" value="Actualizame" onclick="location.reload();">
+    <div id="feed" align="center"></div>
+    <div id="feed2" align="center"></div>
+	<script> 
+	 inicializa_feed();
+
+	 google.load("feeds", "1");
+
+	 google.setOnLoadCallback(actualiza_informacion_ubicacion);
+	 google.setOnLoadCallback(actualiza_informacion_programa);	 
+	</script>	
+	
+    </body>
+
+</html>

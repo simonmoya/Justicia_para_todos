@@ -1,0 +1,25 @@
+﻿<html>
+    <head>
+        <title>ChildBrowser</title>
+	
+		<script type="text/javascript" charset="utf-8" src="phonegap.js"></script>
+		<script type="text/javascript" src="childbrowser.js"></script>
+		
+        <script>
+            function onBodyLoad()
+            {      
+                document.addEventListener("deviceready", onDeviceReady, false);
+            }
+            function onDeviceReady()
+            {
+					alert("antes del plugin");
+                    window.plugins.childBrowser.showWebPage('http://www.evoltiservice.com/movil/twitter.html',{ showLocationBar: true });
+					alert("despues del plugin");
+            }
+        </script>
+    </head>
+    <body>
+        <p>click the button to open Oodles Technologies WebSite in ChildBrowser</p>
+        <button onclick="onDeviceReady();">click</button>
+    </body>
+</html>

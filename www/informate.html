@@ -1,0 +1,118 @@
+﻿<html class="no-js ui-mobile-rendering" lang="es">
+ <head>
+      <title>Infórmate</title>
+
+      <meta http-equiv="Content-Type" name="viewport" content="width=device-width; initial-scale=1; charset=UTF-8">
+	  <script src="js/jquery-1.9.1.min.js"></script>
+
+	<script>var array_youtube = new Array();</script>
+
+	  
+ <script type='text/javascript'> 
+  
+ function mostrarYoutube(search_input,id)
+ {
+  var nombre = 'result'+id;
+   if ((array_youtube[id] == 1) || (typeof array_youtube[id] == "undefined"))
+   {
+    array_youtube[id] = 0;
+    youtube(search_input,nombre);
+   } 
+ }
+  
+  
+  function youtube(search_input,componente) { 
+    var keyword= encodeURIComponent(search_input); 
+    var yt_url='http://gdata.youtube.com/feeds/api/videos?q='+keyword+'&format=5&max-results=1&v=2&alt=jsonc';  
+    $.ajax({ 
+      type: "GET", 
+      url: yt_url, 
+      dataType:"jsonp", 
+      success: function(response){ 
+        if(response.data.items){
+          $.each(response.data.items, function(i,data){ 
+            var video_id=data.id; 
+            var video_title=data.title; 
+            var video_viewCount=data.viewCount; 
+            var video_frame="<iframe width=350 height=200 src='http://www.youtube.com/embed/"+video_id+"?rel=0' frameborder=0 allowfullscreen></iframe>"; 
+            final= "<div align=center><div class=redondeo>"+video_frame+"</div></div>"; 
+			var capa = document.getElementById(componente);
+			var video = document.createElement("div");
+			video.innerHTML = final;
+			capa.appendChild(video);
+          }); 
+        } else { 
+          $("#result").html("<div id='no'>No se encontraron videos disponibles</div>"); 
+        } 
+      } 
+    }); 
+  }; 
+ 
+
+</script>
+
+      <link rel="stylesheet" href="css/jquery.mobile-1.3.1.min.css" />
+      <script src="js/libs/require.js" data-main="js/mobile"></script>
+ <style>
+.redondeo{
+	border-radius:7px;
+	-moz-border-radius:7px; //Firefox
+	-webkit-border-radius:7px; //Safari y navegadores que usen WebKit	
+	box-shadow: 1px 1px 2px rgba(0,0,0,.5);
+	-webkit-box-shadow: 1px 1px 2px rgba(0,0,0,.5);
+	-moz-box-shadow: 1px 1px 2px rgba(0,0,0,.5);
+	text-shadow: #fff 0px 1px 1px;
+	background: -webkit-gradient(linear, left top, left bottom, from(#D7E9F3), to(#ffffff));
+	background: -moz-linear-gradient(top,  #D7E9F3,  #ffffff);
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#D7E9F3', endColorstr='#ffffff');
+	width:370px;
+	height:220px;
+	margin-right: auto;
+	margin-left: auto;
+    text-align: center;	
+    text-top: center;	
+	display:table-cell;
+	vertical-align:middle;
+	}
+
+
+ </style>
+</head>
+<body>
+<div id="categories" data-role="page" data-title="Infórmate" style="background-image: url('images/fondo_2.jpg'); background-repeat:no-repeat; background-size:100% 100%; background-position: absolute">
+<div height=200px style="background-image: url('images/cabecera2.png'); background-repeat:no-repeat; background-size:100% 100%; background-position: absolute">
+<br><br><br><br>
+</div>
+<div id="principal" data-theme="c" data-content-theme="d">
+<script>
+
+ var db;
+ db = openDatabase("ejemplo3.db3", "1.0", "Ministerio de Justicia", 500000);
+ db.transaction(function(tx) 
+				{
+            	 tx.executeSql("SELECT convencion_parametro, valor_parametro FROM parametro where codigo_tparametro = 3", [],
+                 function(tx, result)
+				 {
+				  var j;
+                  for(var i=0; i < result.rows.length; i++) 
+				  {
+				   j = i + 1;
+				   var capa = document.getElementById('principal');
+				   var video = document.createElement("div");
+				   final = final = " <h3 align=center>"+result.rows.item(i)['convencion_parametro']+"</h3>";
+				   final = final + " <div id='result"+j+"'></div> ";
+				   video.innerHTML = final;
+				   capa.appendChild(video);
+				   mostrarYoutube(result.rows.item(i)['valor_parametro'],j);
+                  }
+                 });
+		        });
+</script>	
+		
+</div>	
+
+
+<p><a href="index.html" data-direction="reverse" data-role="button" data-theme="b">Regresar</a></p>
+	
+</body>
+</html>

@@ -1,0 +1,58 @@
+body{
+	background:#fff;
+	margin:0;
+	padding:0;
+	font-family: Tahoma, Verdana, Arial, sans-serif;
+}
+
+h1{
+	text-align: center;
+	padding-top: 20px; 
+}
+#divCarousel{
+	width: 320px;
+	position: absolute;	
+}
+	#divCarousel #divIzquierda{
+		width: 35px;
+		height: 110px;
+		float: left;
+		cursor: pointer;
+		background: url(../images/izquierda.png) center no-repeat;
+	}
+		#divCarousel #divIzquierda:hover{
+			background: url(../images/izquierda-hover.png) center no-repeat;
+		}
+	#divCarousel #divDerecha{
+		width: 35px;
+		height: 110px;
+		float: left;
+		cursor: pointer;
+		background: url(../images/derecha.png) center no-repeat;
+	}
+		#divCarousel #divDerecha:hover{
+			background: url(../images/derecha-hover.png) center no-repeat;
+		}
+	#divCarousel #divCentro{
+		width: 240px;
+		float: left;
+		/*el overflow es quien hace gran p arte de la magia*/
+		overflow: hidden;
+		height: 105px;
+	}
+		#divCarousel #divCentro ul{
+			list-style-type: none;
+			padding: 0;
+			margin: 0;
+		}
+			#divCarousel #divCentro ul li{
+				display: inline-block;
+				margin: 25px 7px;
+				text-align: center;
+			}
+				#divCarousel #divCentro ul li images{
+					padding: 0 10px;
+				}
+.clsSalto{
+	clear: both;
+}
